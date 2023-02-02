@@ -399,7 +399,11 @@ std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const 
     else // KLID
     {
         CHECK(inputProfileTokens[1].size() == (KL_NAMELENGTH - 1));
-        profileDisplayName = GetKeyboardLayoutDisplayName(inputProfileTokens[1].c_str());
+
+        wchar_t string[MAX_PATH] = {};
+        swprintf_s(string, std::size(string), L"%s keyboard", GetKeyboardLayoutDisplayName(inputProfileTokens[1].c_str()).c_str());
+
+        profileDisplayName = string;
     }
 
     std::wstring inputProfileNormalized = inputProfile;
