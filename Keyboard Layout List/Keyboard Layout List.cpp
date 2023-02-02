@@ -383,10 +383,9 @@ std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const 
 
     std::wstring localeName = (langId == LOCALE_CUSTOM_DEFAULT) ? fallbackLocaleName : GetLocaleName(langId);
     std::wstring profileDisplayName;
-    if (inputProfileTokens[1][0] == L'{') // TSF IME
+    if (inputProfileTokens[1].front() == L'{' && inputProfileTokens[1].back() == L'}') // TSF IME
     {
         constexpr size_t guidLen = 38;
-
         CHECK(inputProfileTokens[1].size() == guidLen * 2);
 
         CLSID clsId;
@@ -399,11 +398,12 @@ std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const 
     }
     else // KLID
     {
+        CHECK(inputProfileTokens[1].size() == (KL_NAMELENGTH - 1));
         profileDisplayName = GetKeyboardLayoutDisplayName(inputProfileTokens[1].c_str());
     }
 
     std::wstring inputProfileNormalized = inputProfile;
-    // normalize input profile to lower case
+    // normalize input profile to upper case
     std::transform(inputProfileNormalized.begin(), inputProfileNormalized.end(), inputProfileNormalized.begin(), [](wchar_t c) { return std::towupper(c); });
 
     wchar_t string[MAX_PATH] = {};
