@@ -274,14 +274,8 @@ std::wstring GetLocaleDisplayName(const std::wstring& localeName)
         return cache[localeName];
     }
 
-    wchar_t languageName[MAX_PATH] = {};
-    CHECK(::GetLocaleInfoEx(localeName.c_str(), LOCALE_SENGLISHLANGUAGENAME, languageName, (int)std::size(languageName)) > 0);
-
-    wchar_t countryName[MAX_PATH] = {};
-    CHECK(::GetLocaleInfoEx(localeName.c_str(), LOCALE_SENGLISHCOUNTRYNAME, countryName, (int)std::size(countryName)) > 0);
-
     wchar_t string[MAX_PATH] = {};
-    swprintf_s(string, std::size(string), L"%s - %s", languageName, countryName);
+    CHECK(::GetLocaleInfoEx(localeName.c_str(), LOCALE_SENGLISHDISPLAYNAME, string, (int)std::size(string)) > 0);
 
     cache[localeName] = string;
 
