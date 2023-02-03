@@ -434,7 +434,7 @@ int main()
         std::sort(layouts.begin(), layouts.end(), [](const auto& a, const auto& b) { return GetKeyboardLayoutDisplayName(a.c_str()) < GetKeyboardLayoutDisplayName(b.c_str());  });
 
         std::wcout << L"| Keyboard | Keyboard identifier (hexadecimal) |\n";
-        std::wcout << L"|-|-|\n";
+        std::wcout << L"|---|---|\n";
         for (auto& layout : layouts)
         {
             std::wstring layoutDisplayName = GetKeyboardLayoutDisplayName(layout.c_str());
@@ -459,7 +459,7 @@ int main()
         std::sort(langs.begin(), langs.end(), [](const auto& a, const auto& b) { return GetLanguageDisplayName(a) < GetLanguageDisplayName(b);  });
 
         std::wcout << L"| Language/Region | Input profile (Language and keyboard pair) |\n";
-        std::wcout << L"|-|-|\n";
+        std::wcout << L"|---|---|\n";
         for (const auto& lang : langs)
         {
             for (const auto& profile_layout : profiles[lang])
@@ -484,7 +484,7 @@ int main()
         std::sort(locales.begin(), locales.end(), [](const auto& a, const auto& b) { return GetLocaleDisplayName(a) < GetLocaleDisplayName(b);  });
 
         std::wcout << L"| Language/Region | Primary input profile (language and keyboard pair) | Secondary input profile |\n";
-        std::wcout << L"|-|-|-|\n";
+        std::wcout << L"|---|---|---|\n";
 
         for (const auto& locale : locales)
         {
@@ -499,7 +499,7 @@ int main()
             }
 
             std::wstring localeDisplayName = GetLocaleDisplayName(locale);
-            std::wcout << localeDisplayName << L" | ";
+            std::wcout << L"| " << localeDisplayName << L" | ";
 
             auto inputProfiles = split(keyboardsToInstall, L";", true);
             for (size_t i = 0; i < inputProfiles.size(); ++i)
