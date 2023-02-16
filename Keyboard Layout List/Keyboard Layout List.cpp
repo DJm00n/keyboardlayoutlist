@@ -315,8 +315,16 @@ std::vector<std::wstring> EnumInstalledLocales()
 
 std::wstring GetKeyboardsToInstall(const std::wstring& localeName)
 {
+    static std::map<std::wstring, std::wstring> cache;
+    if (cache.find(localeName) != cache.end())
+    {
+        return cache[localeName];
+    }
+
     wchar_t string[MAX_PATH] = {};
     CHECK(::GetLocaleInfoEx(localeName.c_str(), LOCALE_SKEYBOARDSTOINSTALL, string, (int)std::size(string)) > 0);
+
+    cache[localeName] = string;
 
     return string;
 }
@@ -352,15 +360,23 @@ std::vector<std::wstring> split(const std::wstring& s, const std::wstring& delim
     return tokens;
 }
 
+void towupper(std::wstring& string)
+{
+    for (wchar_t& ch : string)
+    {
+        ch = std::towupper(ch);
+    }
+}
+
 // Get Display name in "<localeName>: <profileDisplayName> (<inputProfile>)" format.
 // There are two types of <inputProfile> strings:
 // <LangID>:{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
 // <LangID>:<KLID>
 // 
 // Example output:
-// sq-AL: Albanian (041c:0000041c)
-// am-ET: Amharic Input Method 2 (045e:{7C472071-36A7-4709-88CC-859513E583A9}{9A4E8FC7-76BF-4A63-980D-FADDADF7E987})
-std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const std::wstring& fallbackLocaleName = L"en-US")
+// sq-AL: Albanian (041C:0000041C)
+// am-ET: Amharic Input Method 2 (045C:{7C472071-36A7-4709-88CC-859513E583A9}{9A4E8FC7-76BF-4A63-980D-FADDADF7E987})
+std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const std::wstring& inputProfileLanguage)
 {
     static std::map<std::wstring, std::wstring> cache;
     if (cache.find(inputProfile) != cache.end())
@@ -375,7 +391,7 @@ std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const 
     LANGID langId = static_cast<LANGID>(std::wcstoul(inputProfileTokens[0].c_str(), &langIdStrTmp, 16));
     CHECK(inputProfileTokens[0].c_str() != langIdStrTmp);
 
-    std::wstring localeName = (langId == LOCALE_CUSTOM_DEFAULT) ? fallbackLocaleName : GetLocaleName(langId);
+    std::wstring language = (langId == LOCALE_CUSTOM_DEFAULT) ? inputProfileLanguage : GetLocaleName(langId);
     std::wstring profileDisplayName;
     if (inputProfileTokens[1].front() == L'{' && inputProfileTokens[1].back() == L'}') // TSF IME
     {
@@ -401,11 +417,12 @@ std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const 
     }
 
     std::wstring inputProfileNormalized = inputProfile;
+
     // normalize input profile to upper case
-    std::transform(inputProfileNormalized.begin(), inputProfileNormalized.end(), inputProfileNormalized.begin(), [](wchar_t c) { return std::towupper(c); });
+    towupper(inputProfileNormalized);
 
     wchar_t string[MAX_PATH] = {};
-    swprintf_s(string, std::size(string), L"%s: %s (%s)", localeName.c_str(), profileDisplayName.c_str(), inputProfileNormalized.c_str());
+    swprintf_s(string, std::size(string), L"%s: %s (%s)", language.c_str(), profileDisplayName.c_str(), inputProfileNormalized.c_str());
 
     cache[inputProfile] = string;
 
@@ -438,7 +455,9 @@ int main()
         for (auto& layout : layouts)
         {
             std::wstring layoutDisplayName = GetKeyboardLayoutDisplayName(layout.c_str());
-            std::wcout << L"| " << layoutDisplayName.c_str() << L" | 0x" << layout.c_str() << L" |\n";
+            std::wstring layoutNormalized = layout;
+            towupper(layoutNormalized);
+            std::wcout << L"| " << layoutDisplayName << L" | " << layoutNormalized << L" |\n";
         }
     }
 
@@ -486,20 +505,28 @@ int main()
         std::wcout << L"| Language/Region | Primary input profile (language and keyboard pair) | Secondary input profile |\n";
         std::wcout << L"|---|---|---|\n";
 
+        int count = 0;
         for (const auto& locale : locales)
         {
             std::wstring keyboardsToInstall = GetKeyboardsToInstall(locale);
-
-            // Skip information for locales that have same keyboard layout profile as in corresponding parent locale.
-            // 856 -> 426 locales on my system.
             std::wstring parentLocale = GetParentLocale(locale);
-            if (!parentLocale.empty() && keyboardsToInstall == GetKeyboardsToInstall(parentLocale))
+            if (parentLocale.empty())
             {
-                continue;
+                // Skip input profiles that are same as in English language
+                // 856 -> 776 locales on my system.
+                if (locale != L"en" && keyboardsToInstall == GetKeyboardsToInstall(L"en"))
+                    continue;
+            }
+            else
+            {
+                // Skip information for locales that have same keyboard layout profile as in corresponding parent locale.
+                // 856 -> 426 locales on my system.
+                if (keyboardsToInstall == GetKeyboardsToInstall(parentLocale))
+                    continue;
             }
 
             std::wstring localeDisplayName = GetLocaleDisplayName(locale);
-            std::wcout << L"| " << localeDisplayName << L" | ";
+            std::wcout << L"| " /* << locale << L": "*/ << localeDisplayName << L" | ";
 
             auto inputProfiles = split(keyboardsToInstall, L";", true);
             for (size_t i = 0; i < inputProfiles.size(); ++i)
@@ -520,7 +547,10 @@ int main()
             }
 
             std::wcout << L" |\n";
+            ++count;
         }
+
+        std::wcout << L"Printed " << count << " languages out of " << locales.size() << L"\n";
     }
 
     return 0;
