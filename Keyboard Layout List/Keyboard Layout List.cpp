@@ -57,6 +57,53 @@ private:
     void operator=(LogMessageFatal) = delete;
 };
 
+bool endsWith(const std::wstring& s, const std::wstring& suffix)
+{
+    return s.size() >= suffix.size() &&
+        s.substr(s.size() - suffix.size()) == suffix;
+}
+
+std::vector<std::wstring> split(const std::wstring& s, const std::wstring& delimiter, const bool removeEmptyEntries = false)
+{
+    std::vector<std::wstring> tokens;
+
+    for (size_t start = 0, end; start < s.length(); start = end + delimiter.length())
+    {
+        size_t position = s.find(delimiter, start);
+        end = position != std::wstring::npos ? position : s.length();
+
+        std::wstring token = s.substr(start, end - start);
+        if (!removeEmptyEntries || !token.empty())
+        {
+            tokens.push_back(token);
+        }
+    }
+
+    if (!removeEmptyEntries &&
+        (s.empty() || endsWith(s, delimiter)))
+    {
+        tokens.push_back(L"");
+    }
+
+    return tokens;
+}
+
+void towlower(std::wstring& string)
+{
+    for (wchar_t& ch : string)
+    {
+        ch = std::towlower(ch);
+    }
+}
+
+void towupper(std::wstring& string)
+{
+    for (wchar_t& ch : string)
+    {
+        ch = std::towupper(ch);
+    }
+}
+
 constexpr wchar_t KeyboardLayoutsRegistryPath[] = L"SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts";
 
 std::wstring GetKeyboardLayoutDisplayName(_In_ LPCWSTR pwszKLID)
@@ -91,6 +138,42 @@ std::wstring GetKeyboardLayoutDisplayName(_In_ LPCWSTR pwszKLID)
     CHECK_EQ(::RegCloseKey(key), ERROR_SUCCESS);
 
     return layoutDisplayName;
+}
+
+std::wstring GetKeyboardLayoutPath(_In_ LPCWSTR pwszKLID)
+{
+    HKEY key;
+    CHECK_EQ(::RegOpenKeyW(HKEY_LOCAL_MACHINE, KeyboardLayoutsRegistryPath, &key), ERROR_SUCCESS);
+
+    WCHAR layoutFileName[MAX_PATH] = {};
+    DWORD layoutFileNameSize = static_cast<DWORD>(std::size(layoutFileName));
+
+    LSTATUS errorCode = ::RegGetValueW(key, pwszKLID, L"Layout File", RRF_RT_REG_SZ, nullptr, layoutFileName, &layoutFileNameSize);
+
+    if (errorCode != ERROR_SUCCESS)
+    {
+        return {};
+    }
+
+    WCHAR filePath[MAX_PATH] = {};
+    ::GetSystemDirectoryW(filePath, static_cast<UINT>(std::size(filePath)));
+    ::PathAppendW(filePath, layoutFileName);
+
+    return filePath;
+}
+
+
+std::wstring GetKeyboardLayoutLink(_In_ LPCWSTR pwszKLID)
+{
+    std::wstring path = GetKeyboardLayoutPath(pwszKLID);
+    path = ::PathFindFileNameW(&path[0]);
+    ::PathRemoveExtensionW(&path[0]);
+    towlower(path);
+
+    wchar_t buf[MAX_PATH] = {};
+    swprintf_s(buf, std::size(buf), L"https://learn.microsoft.com/globalization/keyboards/%s", path.c_str());
+
+    return buf;
 }
 
 std::vector<std::wstring> EnumInstalledKeyboardLayouts()
@@ -329,45 +412,6 @@ std::wstring GetKeyboardsToInstall(const std::wstring& localeName)
     return string;
 }
 
-bool endsWith(const std::wstring& s, const std::wstring& suffix)
-{
-    return s.size() >= suffix.size() &&
-        s.substr(s.size() - suffix.size()) == suffix;
-}
-
-std::vector<std::wstring> split(const std::wstring& s, const std::wstring& delimiter, const bool removeEmptyEntries = false)
-{
-    std::vector<std::wstring> tokens;
-
-    for (size_t start = 0, end; start < s.length(); start = end + delimiter.length())
-    {
-        size_t position = s.find(delimiter, start);
-        end = position != std::wstring::npos ? position : s.length();
-
-        std::wstring token = s.substr(start, end - start);
-        if (!removeEmptyEntries || !token.empty())
-        {
-            tokens.push_back(token);
-        }
-    }
-
-    if (!removeEmptyEntries &&
-        (s.empty() || endsWith(s, delimiter)))
-    {
-        tokens.push_back(L"");
-    }
-
-    return tokens;
-}
-
-void towupper(std::wstring& string)
-{
-    for (wchar_t& ch : string)
-    {
-        ch = std::towupper(ch);
-    }
-}
-
 // Get Display name in "<localeName>: <profileDisplayName> (<inputProfile>)" format.
 // There are two types of <inputProfile> strings:
 // <LangID>:{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
@@ -410,8 +454,15 @@ std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const 
     {
         CHECK(inputProfileTokens[1].size() == (KL_NAMELENGTH - 1));
 
+        std::wstring layoutDisplayName = GetKeyboardLayoutDisplayName(inputProfileTokens[1].c_str());
+        std::wstring layoutFileLink = GetKeyboardLayoutLink(inputProfileTokens[1].c_str());
+        if (!layoutFileLink.empty())
+        {
+            layoutDisplayName = L"[" + layoutDisplayName + L"](" + layoutFileLink + L")";
+        }
+
         wchar_t string[MAX_PATH] = {};
-        swprintf_s(string, std::size(string), L"%s keyboard", GetKeyboardLayoutDisplayName(inputProfileTokens[1].c_str()).c_str());
+        swprintf_s(string, std::size(string), L"%s keyboard", layoutDisplayName.c_str());
 
         profileDisplayName = string;
     }
@@ -450,11 +501,16 @@ int main()
         // Sort by Keyboard Layout Name string
         std::sort(layouts.begin(), layouts.end(), [](const auto& a, const auto& b) { return GetKeyboardLayoutDisplayName(a.c_str()) < GetKeyboardLayoutDisplayName(b.c_str());  });
 
-        std::wcout << L"| Keyboard | Keyboard identifier (hexadecimal) |\n";
+        std::wcout << L"| Keyboard | Keyboard identifier |\n";
         std::wcout << L"|---|---|\n";
         for (auto& layout : layouts)
         {
             std::wstring layoutDisplayName = GetKeyboardLayoutDisplayName(layout.c_str());
+            std::wstring layoutFileLink = GetKeyboardLayoutLink(layout.c_str());
+            if (!layoutFileLink.empty())
+            {
+                layoutDisplayName = L"[" + layoutDisplayName + L"](" + layoutFileLink + L")";
+            }
             std::wstring layoutNormalized = layout;
             towupper(layoutNormalized);
             std::wcout << L"| " << layoutDisplayName << L" | " << layoutNormalized << L" |\n";
