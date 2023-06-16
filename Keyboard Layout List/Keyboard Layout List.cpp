@@ -456,13 +456,16 @@ std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const 
 
         std::wstring layoutDisplayName = GetKeyboardLayoutDisplayName(inputProfileTokens[1].c_str());
         std::wstring layoutFileLink = GetKeyboardLayoutLink(inputProfileTokens[1].c_str());
-        if (!layoutFileLink.empty())
-        {
-            layoutDisplayName = L"[" + layoutDisplayName + L"](" + layoutFileLink + L")";
-        }
 
         wchar_t string[MAX_PATH] = {};
-        swprintf_s(string, std::size(string), L"%s keyboard", layoutDisplayName.c_str());
+        if (!layoutFileLink.empty())
+        {
+            swprintf_s(string, std::size(string), L"[%s keyboard](%s)", layoutDisplayName.c_str(), layoutFileLink.c_str());
+        }
+        else
+        {
+            swprintf_s(string, std::size(string), L"%s keyboard", layoutDisplayName.c_str());
+        }
 
         profileDisplayName = string;
     }
@@ -472,7 +475,7 @@ std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const 
     // normalize input profile to upper case
     towupper(inputProfileNormalized);
 
-    wchar_t string[MAX_PATH] = {};
+    wchar_t string[1024] = {};
     swprintf_s(string, std::size(string), L"%s: %s (%s)", language.c_str(), profileDisplayName.c_str(), inputProfileNormalized.c_str());
 
     cache[inputProfile] = string;
