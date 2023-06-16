@@ -16,6 +16,10 @@
 #include <fcntl.h>
 #include <io.h>
 
+#include <atlbase.h>
+#include <msxml6.h>
+#include <comutil.h>
+
 #define CHECK(x) \
   if (!(x)) LogMessageFatal(__FILE__, __LINE__).stream() << "Check failed: " #x
 #define CHECK_EQ(x, y) CHECK((x) == (y))
@@ -165,13 +169,89 @@ std::wstring GetKeyboardLayoutPath(_In_ LPCWSTR pwszKLID)
 
 std::wstring GetKeyboardLayoutLink(_In_ LPCWSTR pwszKLID)
 {
+    static std::map<std::wstring, std::wstring> cache;
+    if (cache.find(pwszKLID) != cache.end())
+    {
+        return cache[pwszKLID];
+    }
+
     std::wstring path = GetKeyboardLayoutPath(pwszKLID);
     path = ::PathFindFileNameW(&path[0]);
     ::PathRemoveExtensionW(&path[0]);
     towlower(path);
 
+    struct Exceptions
+    {
+        LCID klid;
+        const WCHAR* name;
+    } exceptions[] =
+    {
+        { 0x00000404, L"kbdus_4" },
+        { 0x00000409, L"kbdus_7" },
+        { 0x00000416, L"kbdbr_1" },
+        { 0x0000041a, L"kbdcr_2" },
+        { 0x00000424, L"kbdcr_1" },
+        { 0x00000432, L"kbdnso_2" },
+        { 0x0000046c, L"kbdnso_1" },
+        { 0x0000046e, L"kbdsf_1" },
+        { 0x00000804, L"kbdus_2" },
+        { 0x0000080c, L"kbdbe_2" },
+        { 0x00000813, L"kbdbe_1" },
+        { 0x0000083b, L"kbdfi1_2" },
+        { 0x00000c04, L"kbdus_5" },
+        { 0x00001004, L"kbdus_3" },
+        { 0x0000100c, L"kbdsf_2" },
+        { 0x00001404, L"kbdus_6" },
+        { 0x00010402, L"kbdus_1" },
+        { 0x00010416, L"kbdbr_2" },
+        { 0x0001083b, L"kbdfi1_1" },
+        { 0x00010c00, L"kbdmyan_1" },
+        { 0x00130c00, L"kbdmyan_2" },
+    };
+
+    wchar_t* langIdStrTmp = nullptr;
+    LCID klid = static_cast<LCID>(std::wcstoul(pwszKLID, &langIdStrTmp, 16));
+    CHECK(pwszKLID != langIdStrTmp);
+
+    auto it = std::find_if(std::begin(exceptions), std::end(exceptions), [klid](const auto& p) { return p.klid == klid; });
+    if (it != std::end(exceptions))
+    {
+        path = it->name;
+    }
+
+    // Custom layout
+    if ((klid & 0xa0000000) == 0xa0000000)
+    {
+        return {};
+    }
+
     wchar_t buf[MAX_PATH] = {};
     swprintf_s(buf, std::size(buf), L"https://learn.microsoft.com/globalization/keyboards/%s", path.c_str());
+
+#ifndef NDEBUG
+    {
+        HRESULT hr;
+        CComPtr<IXMLHTTPRequest> request;
+
+        hr = request.CoCreateInstance(CLSID_XMLHTTP60);
+        hr = request->open(_bstr_t("GET"), _bstr_t(buf), _variant_t(VARIANT_FALSE), _variant_t(), _variant_t());
+        hr = request->send(_variant_t());
+
+        // get status - 200 if success
+        long status;
+        hr = request->get_status(&status);
+
+        char buf2[MAX_PATH] = {};
+        WideCharToMultiByte(CP_UTF8, 0, buf, MAX_PATH, buf2, MAX_PATH, 0, nullptr);
+
+        char buf3[MAX_PATH] = {};
+        WideCharToMultiByte(CP_UTF8, 0, pwszKLID, KL_NAMELENGTH - 1, buf3, MAX_PATH, 0, nullptr);
+
+        if (!(status == 200)) LogMessageFatal(__FILE__, __LINE__).stream() << "Cannot load: " << buf2 << " for " << buf3;
+    }
+#endif // NDEBUG
+
+    cache[pwszKLID] = buf;
 
     return buf;
 }
@@ -495,6 +575,8 @@ int main()
 {
     // enable UTF-16 support on console
     (void)_setmode(_fileno(stdout), _O_U16TEXT);
+
+    ::CoInitialize(0);
 
     // Keyboard identifiers
     // https://learn.microsoft.com/windows-hardware/manufacture/desktop/windows-language-pack-default-values#keyboard-identifiers
