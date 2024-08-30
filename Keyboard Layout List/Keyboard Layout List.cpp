@@ -166,7 +166,6 @@ std::wstring GetKeyboardLayoutPath(_In_ LPCWSTR pwszKLID)
     return filePath;
 }
 
-
 std::wstring GetKeyboardLayoutLink(_In_ LPCWSTR pwszKLID)
 {
     static std::map<std::wstring, std::wstring> cache;
@@ -252,6 +251,65 @@ std::wstring GetKeyboardLayoutLink(_In_ LPCWSTR pwszKLID)
 #endif // NDEBUG
 
     cache[pwszKLID] = buf;
+
+    return buf;
+}
+
+std::wstring GetTSFProfileLink(const LCID& langId, const CLSID& clsId, const GUID& profileGuid)
+{
+    static std::map<LCID, std::wstring> cache;
+    if (cache.find(langId) != cache.end())
+    {
+        return cache[langId];
+    }
+
+    struct KnownTSFProfiles
+    {
+        LCID langId;
+        const WCHAR* name;
+    } known[] =
+    {
+        { MAKELANGID(LANG_AMHARIC, SUBLANG_AMHARIC_ETHIOPIA), L"amharic-ime"},
+        { MAKELANGID(LANG_BENGALI, SUBLANG_BENGALI_INDIA), L"bengali-ime"},
+        { MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED), L"simplified-chinese-ime" },
+        { MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), L"traditional-chinese-ime"},
+        { MAKELANGID(LANG_GUJARATI, SUBLANG_GUJARATI_INDIA), L"gujarati-ime"},
+        { MAKELANGID(LANG_HINDI, SUBLANG_HINDI_INDIA), L"hindi-ime"},
+        { MAKELANGID(LANG_JAPANESE, SUBLANG_JAPANESE_JAPAN), L"japanese-ime"},
+        { MAKELANGID(LANG_KANNADA, SUBLANG_KANNADA_INDIA), L"kannada-ime"},
+        { MAKELANGID(LANG_KOREAN, SUBLANG_KOREAN), L"korean-ime"},
+        { MAKELANGID(LANG_MALAYALAM, SUBLANG_MALAYALAM_INDIA), L"malayalam-ime"},
+        { MAKELANGID(LANG_MARATHI, SUBLANG_MARATHI_INDIA), L"marathi-ime"},
+        { MAKELANGID(LANG_NEPALI, SUBLANG_HINDI_INDIA), L"hindi-ime"},
+        { MAKELANGID(LANG_ODIA, SUBLANG_ODIA_INDIA), L"odia-ime"},
+        { MAKELANGID(LANG_PUNJABI, SUBLANG_PUNJABI_INDIA), L"punjabi-ime"},
+        { MAKELANGID(LANG_TAMIL, SUBLANG_TAMIL_INDIA), L"tamil-ime"},
+        { MAKELANGID(LANG_TAMIL, SUBLANG_TAMIL_SRI_LANKA), L"tamil-ime" },
+        { MAKELANGID(LANG_TELUGU, SUBLANG_TELUGU_INDIA), L"telugu-ime"},
+        { MAKELANGID(LANG_TIGRINYA, SUBLANG_TIGRINYA_ETHIOPIA), L"tigrinya-ime"},
+        { MAKELANGID(LANG_VIETNAMESE, SUBLANG_VIETNAMESE_VIETNAM), L"vietnamese-ime" },
+        { MAKELANGID(LANG_YI, SUBLANG_YI_PRC), L"yi-ime"},
+    };
+
+    std::wstring path;
+    auto it = std::find_if(std::begin(known), std::end(known), [langId](const auto& p) { return p.langId == langId; });
+    if (it != std::end(known))
+    {
+        path = it->name;
+    }
+
+    wchar_t buf[MAX_PATH] = {};
+    if (path.empty())
+    {
+        WORD lang = PRIMARYLANGID(langId);
+        WORD subLang = SUBLANGID(langId);
+        return buf;
+
+    }
+
+    swprintf_s(buf, std::size(buf), L"https://learn.microsoft.com/globalization/input/%s", path.c_str());
+
+    cache[langId] = buf;
 
     return buf;
 }
@@ -528,7 +586,20 @@ std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const 
         GUID guid;
         CHECK_EQ(::IIDFromString(inputProfileTokens[1].substr(guidLen).c_str(), &guid), S_OK);
 
-        profileDisplayName = GetTSFProfileDisplayName(langId, clsId, guid);
+        std::wstring tsfProfileDisplayName = GetTSFProfileDisplayName(langId, clsId, guid);
+        std::wstring tsfProfileLink = GetTSFProfileLink(langId, clsId, guid);
+
+        wchar_t string[MAX_PATH] = {};
+        if (!tsfProfileLink.empty())
+        {
+            swprintf_s(string, std::size(string), L"[%s](%s)", tsfProfileDisplayName.c_str(), tsfProfileLink.c_str());
+        }
+        else
+        {
+            swprintf_s(string, std::size(string), L"%s", tsfProfileDisplayName.c_str());
+        }
+
+        profileDisplayName = string;
     }
     else // KLID
     {

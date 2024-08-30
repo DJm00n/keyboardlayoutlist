@@ -7,7 +7,7 @@ This tool is intended to generate these tables on current running Windows system
 
 Was written just for fun and to improve Windows docs which had outdated information.
 
-Sample output from my Windows 11 22H2 22621.1702:
+Sample output from my Windows 11 22H2 22631.4037:
 
 | Keyboard | Keyboard identifier |
 |---|---|
@@ -223,34 +223,34 @@ Sample output from my Windows 11 22H2 22621.1702:
 
 | Language/Region | Input profile (Language and keyboard pair) |
 |---|---|
-| Amharic (Ethiopia) | am-ET: Amharic Input Method 2 (045E:{7C472071-36A7-4709-88CC-859513E583A9}{9A4E8FC7-76BF-4A63-980D-FADDADF7E987}) |
-| Bengali (India) | bn-IN: Bangla Phonetic (0445:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{C7F2F349-36A2-4F2E-977B-5C18BAF1AE7D}) |
-| Chinese (Simplified, China) | zh-CN: Microsoft Wubi (0804:{6A498709-E00B-4C45-A018-8F9E4081AE40}{82590C13-F4DD-44F4-BA1D-8667246FDF8E}) |
-| Chinese (Simplified, China) | zh-CN: Microsoft Pinyin (0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}) |
-| Chinese (Traditional, Taiwan) | zh-TW: Microsoft Changjie (0404:{531FDEBF-9B4C-4A43-A2AA-960E8FCDC732}{4BDF9F03-C7D3-11D4-B2AB-0080C882687E}) |
-| Chinese (Traditional, Taiwan) | zh-TW: Microsoft Quick (0404:{531FDEBF-9B4C-4A43-A2AA-960E8FCDC732}{6024B45F-5C54-11D4-B921-0080C882687E}) |
-| Chinese (Traditional, Taiwan) | zh-TW: Microsoft Bopomofo (0404:{B115690A-EA02-48D5-A231-E3578D2FDF80}{B2F9C502-1742-11D4-9790-0080C882687E}) |
-| Chinese (Traditional, Taiwan) | zh-TW: Chinese Traditional DaYi (0404:{E429B25A-E5D3-4D1F-9BE3-0C608477E3A1}{037B2C25-480C-4D7F-B027-D6CA6B69788A}) |
-| Chinese (Traditional, Taiwan) | zh-TW: Chinese Traditional Array (0404:{E429B25A-E5D3-4D1F-9BE3-0C608477E3A1}{D38EFF65-AA46-4FD5-91A7-67845FB02F5B}) |
-| Gujarati (India) | gu-IN: Gujarati Phonetic (0447:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{CDB41983-C911-4685-98CC-FC720BBF8FC8}) |
-| Hindi (India) | hi-IN: Hindi Phonetic (0439:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{26FA8EBD-97DB-4F65-BF35-5E219EBD0079}) |
-| Japanese (Japan) | ja-JP: Microsoft IME (0411:{03B5835F-F03C-411B-9CE2-AA23E1171E36}{A76C93D9-5523-4E90-AAFA-4DB112F9AC76}) |
-| Kannada (India) | kn-IN: Kannada Phonetic (044B:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{0F420707-90F7-4E1B-B9F2-91FF3CA9D990}) |
-| Korean (Korea) | ko-KR: Microsoft IME (0412:{A028AE76-01B1-46C2-99C4-ACD9858AE02F}{B5FE1F02-D5F2-4445-9C03-C568F23C99A1}) |
-| Korean (Korea) | ko-KR: Microsoft Old Hangul IME (0412:{A1E2B86B-924A-4D43-80F6-8A820DF7190F}{B60AF051-257A-46BC-B9D3-84DAD819BAFB}) |
-| Malayalam (India) | ml-IN: Malayalam Phonetic (044C:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{6346F0DC-2FE4-40E6-99D5-7362723C3780}) |
-| Marathi (India) | mr-IN: Marathi Phonetic (044E:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{DBEB227A-4EF6-45A6-85B5-B1A03D95BB66}) |
-| Nepali (Nepal) | ne-NP: Hindi Phonetic (0461:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{7912A487-286C-4825-A608-F676C630B733}) |
-| Odia (India) | or-IN: Odia Phonetic (0448:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{607EBD43-EA66-4CAC-A0B1-40F1D147364B}) |
-| Punjabi (India) | pa-IN: Punjabi Phonetic (0446:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{59139512-9763-4E5D-B8E5-0AC1C3BAE1AE}) |
-| Tamil (India) | ta-IN: Tamil Anjal (0449:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{02E8FC61-6A42-4749-8124-68E28105C20E}) |
-| Tamil (India) | ta-IN: Tamil Phonetic (0449:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{045CBA61-4228-4F62-AC0C-F725470D7BFC}) |
-| Tamil (Sri Lanka) | ta-LK: Tamil Anjal (0849:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{02E8FC61-6A42-4749-8124-68E28105C20E}) |
-| Telugu (India) | te-IN: Telugu Phonetic (044A:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{9F0CDC2B-12B2-4776-A144-F79901A9F8DA}) |
-| Tigrinya (Ethiopia) | ti-ET: Tigrinya Input Method (0473:{E429B25A-E5D3-4D1F-9BE3-0C608477E3A1}{3CAB88B7-CC3E-46A6-9765-B772AD7761FF}) |
-| Vietnamese (Vietnam) | vi-VN: Vietnamese Number Key-Based (042A:{C2CB2CF0-AF47-413E-9780-8BC3A3C16068}{591AE943-56BE-48F6-8966-06B43915CC5A}) |
-| Vietnamese (Vietnam) | vi-VN: Vietnamese Telex (042A:{C2CB2CF0-AF47-413E-9780-8BC3A3C16068}{5FB02EC5-0A77-4684-B4FA-DEF8A2195628}) |
-| Yi (China) | ii-CN: Yi Input Method (0478:{E429B25A-E5D3-4D1F-9BE3-0C608477E3A1}{409C8376-007B-4357-AE8E-26316EE3FB0D}) |
+| Amharic (Ethiopia) | am-ET: [Amharic Input Method 2](https://learn.microsoft.com/globalization/input/amharic-ime) (045E:{7C472071-36A7-4709-88CC-859513E583A9}{9A4E8FC7-76BF-4A63-980D-FADDADF7E987}) |
+| Bengali (India) | bn-IN: [Bangla Phonetic](https://learn.microsoft.com/globalization/input/bengali-ime) (0445:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{C7F2F349-36A2-4F2E-977B-5C18BAF1AE7D}) |
+| Chinese (Simplified, China) | zh-CN: [Microsoft Wubi](https://learn.microsoft.com/globalization/input/simplified-chinese-ime) (0804:{6A498709-E00B-4C45-A018-8F9E4081AE40}{82590C13-F4DD-44F4-BA1D-8667246FDF8E}) |
+| Chinese (Simplified, China) | zh-CN: [Microsoft Pinyin](https://learn.microsoft.com/globalization/input/simplified-chinese-ime) (0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}) |
+| Chinese (Traditional, Taiwan) | zh-TW: [Microsoft Changjie](https://learn.microsoft.com/globalization/input/traditional-chinese-ime) (0404:{531FDEBF-9B4C-4A43-A2AA-960E8FCDC732}{4BDF9F03-C7D3-11D4-B2AB-0080C882687E}) |
+| Chinese (Traditional, Taiwan) | zh-TW: [Microsoft Quick](https://learn.microsoft.com/globalization/input/traditional-chinese-ime) (0404:{531FDEBF-9B4C-4A43-A2AA-960E8FCDC732}{6024B45F-5C54-11D4-B921-0080C882687E}) |
+| Chinese (Traditional, Taiwan) | zh-TW: [Microsoft Bopomofo](https://learn.microsoft.com/globalization/input/traditional-chinese-ime) (0404:{B115690A-EA02-48D5-A231-E3578D2FDF80}{B2F9C502-1742-11D4-9790-0080C882687E}) |
+| Chinese (Traditional, Taiwan) | zh-TW: [Chinese Traditional DaYi](https://learn.microsoft.com/globalization/input/traditional-chinese-ime) (0404:{E429B25A-E5D3-4D1F-9BE3-0C608477E3A1}{037B2C25-480C-4D7F-B027-D6CA6B69788A}) |
+| Chinese (Traditional, Taiwan) | zh-TW: [Chinese Traditional Array](https://learn.microsoft.com/globalization/input/traditional-chinese-ime) (0404:{E429B25A-E5D3-4D1F-9BE3-0C608477E3A1}{D38EFF65-AA46-4FD5-91A7-67845FB02F5B}) |
+| Gujarati (India) | gu-IN: [Gujarati Phonetic](https://learn.microsoft.com/globalization/input/gujarati-ime) (0447:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{CDB41983-C911-4685-98CC-FC720BBF8FC8}) |
+| Hindi (India) | hi-IN: [Hindi Phonetic](https://learn.microsoft.com/globalization/input/hindi-ime) (0439:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{26FA8EBD-97DB-4F65-BF35-5E219EBD0079}) |
+| Japanese (Japan) | ja-JP: [Microsoft IME](https://learn.microsoft.com/globalization/input/japanese-ime) (0411:{03B5835F-F03C-411B-9CE2-AA23E1171E36}{A76C93D9-5523-4E90-AAFA-4DB112F9AC76}) |
+| Kannada (India) | kn-IN: [Kannada Phonetic](https://learn.microsoft.com/globalization/input/kannada-ime) (044B:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{0F420707-90F7-4E1B-B9F2-91FF3CA9D990}) |
+| Korean (Korea) | ko-KR: [Microsoft IME](https://learn.microsoft.com/globalization/input/korean-ime) (0412:{A028AE76-01B1-46C2-99C4-ACD9858AE02F}{B5FE1F02-D5F2-4445-9C03-C568F23C99A1}) |
+| Korean (Korea) | ko-KR: [Microsoft Old Hangul IME](https://learn.microsoft.com/globalization/input/korean-ime) (0412:{A1E2B86B-924A-4D43-80F6-8A820DF7190F}{B60AF051-257A-46BC-B9D3-84DAD819BAFB}) |
+| Malayalam (India) | ml-IN: [Malayalam Phonetic](https://learn.microsoft.com/globalization/input/malayalam-ime) (044C:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{6346F0DC-2FE4-40E6-99D5-7362723C3780}) |
+| Marathi (India) | mr-IN: [Marathi Phonetic](https://learn.microsoft.com/globalization/input/marathi-ime) (044E:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{DBEB227A-4EF6-45A6-85B5-B1A03D95BB66}) |
+| Nepali (Nepal) | ne-NP: [Hindi Phonetic](https://learn.microsoft.com/globalization/input/hindi-ime) (0461:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{7912A487-286C-4825-A608-F676C630B733}) |
+| Odia (India) | or-IN: [Odia Phonetic](https://learn.microsoft.com/globalization/input/odia-ime) (0448:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{607EBD43-EA66-4CAC-A0B1-40F1D147364B}) |
+| Punjabi (India) | pa-IN: [Punjabi Phonetic](https://learn.microsoft.com/globalization/input/punjabi-ime) (0446:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{59139512-9763-4E5D-B8E5-0AC1C3BAE1AE}) |
+| Tamil (India) | ta-IN: [Tamil Anjal](https://learn.microsoft.com/globalization/input/tamil-ime) (0449:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{02E8FC61-6A42-4749-8124-68E28105C20E}) |
+| Tamil (India) | ta-IN: [Tamil Phonetic](https://learn.microsoft.com/globalization/input/tamil-ime) (0449:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{045CBA61-4228-4F62-AC0C-F725470D7BFC}) |
+| Tamil (Sri Lanka) | ta-LK: [Tamil Anjal](https://learn.microsoft.com/globalization/input/tamil-ime) (0849:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{02E8FC61-6A42-4749-8124-68E28105C20E}) |
+| Telugu (India) | te-IN: [Telugu Phonetic](https://learn.microsoft.com/globalization/input/telugu-ime) (044A:{81EA0A17-AA39-455B-BA20-EA79A8F98966}{9F0CDC2B-12B2-4776-A144-F79901A9F8DA}) |
+| Tigrinya (Ethiopia) | ti-ET: [Tigrinya Input Method](https://learn.microsoft.com/globalization/input/tigrinya-ime) (0473:{E429B25A-E5D3-4D1F-9BE3-0C608477E3A1}{3CAB88B7-CC3E-46A6-9765-B772AD7761FF}) |
+| Vietnamese (Vietnam) | vi-VN: [Vietnamese Number Key-Based](https://learn.microsoft.com/globalization/input/vietnamese-ime) (042A:{C2CB2CF0-AF47-413E-9780-8BC3A3C16068}{591AE943-56BE-48F6-8966-06B43915CC5A}) |
+| Vietnamese (Vietnam) | vi-VN: [Vietnamese Telex](https://learn.microsoft.com/globalization/input/vietnamese-ime) (042A:{C2CB2CF0-AF47-413E-9780-8BC3A3C16068}{5FB02EC5-0A77-4684-B4FA-DEF8A2195628}) |
+| Yi (China) | ii-CN: [Yi Input Method](https://learn.microsoft.com/globalization/input/yi-ime) (0478:{E429B25A-E5D3-4D1F-9BE3-0C608477E3A1}{409C8376-007B-4357-AE8E-26316EE3FB0D}) |
 
 | Language/Region | Primary input profile (language and keyboard pair) | Secondary input profile |
 |---|---|---|
@@ -259,7 +259,7 @@ Sample output from my Windows 11 22H2 22621.1702:
 | Albanian | sq-AL: [Albanian keyboard](https://learn.microsoft.com/globalization/keyboards/kbdal) (041C:0000041C) |  |
 | Albanian (Kosovo) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |  |
 | Alsatian (France) | gsw-FR: [French keyboard](https://learn.microsoft.com/globalization/keyboards/kbdfr) (0484:0000040C) |  |
-| Amharic | am-ET: Amharic Input Method 2 (045E:{7C472071-36A7-4709-88CC-859513E583A9}{9A4E8FC7-76BF-4A63-980D-FADDADF7E987}) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
+| Amharic | am-ET: [Amharic Input Method 2](https://learn.microsoft.com/globalization/input/amharic-ime) (045E:{7C472071-36A7-4709-88CC-859513E583A9}{9A4E8FC7-76BF-4A63-980D-FADDADF7E987}) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Arabic | ar-SA: [Arabic (101) keyboard](https://learn.microsoft.com/globalization/keyboards/kbda1) (0401:00000401) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Arabic (Algeria) | ar-DZ: [Arabic (102) AZERTY keyboard](https://learn.microsoft.com/globalization/keyboards/kbda3) (1401:00020401) | fr-FR: [French keyboard](https://learn.microsoft.com/globalization/keyboards/kbdfr) (040C:0000040C) |
 | Arabic (Bahrain) | ar-BH: [Arabic (101) keyboard](https://learn.microsoft.com/globalization/keyboards/kbda1) (3C01:00000401) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
@@ -288,7 +288,8 @@ Sample output from my Windows 11 22H2 22621.1702:
 | Belarusian | be-BY: [Belarusian keyboard](https://learn.microsoft.com/globalization/keyboards/kbdblr) (0423:00000423) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409)<br>ru-RU: [Russian keyboard](https://learn.microsoft.com/globalization/keyboards/kbdru) (0419:00000419) |
 | Bengali (India) | bn-IN: [Bangla - INSCRIPT keyboard](https://learn.microsoft.com/globalization/keyboards/kbdinbe2) (0445:00020445) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Bodo | hi-IN: [Devanagari - INSCRIPT keyboard](https://learn.microsoft.com/globalization/keyboards/kbdindev) (0439:00000439) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
-| Bosnian | bs-Latn-BA: [Standard keyboard](https://learn.microsoft.com/globalization/keyboards/kbdcr_2) (141A:0000041A) |  |
+| Bosnian | bs-Latn-BA: [Standard keyboard](https://learn.microsoft.com/globalization/keyboards/kbdcr_2) (141A:0000041A)
+ |  |
 | Bosnian (Cyrillic) | bs-Cyrl-BA: [Bosnian (Cyrillic) keyboard](https://learn.microsoft.com/globalization/keyboards/kbdbhc) (201A:0000201A) | bs-Latn-BA: [Standard keyboard](https://learn.microsoft.com/globalization/keyboards/kbdcr_2) (141A:0000041A) |
 | Breton | br-FR: [French keyboard](https://learn.microsoft.com/globalization/keyboards/kbdfr) (047E:0000040C) |  |
 | Bulgarian | bg-BG: [Bulgarian keyboard](https://learn.microsoft.com/globalization/keyboards/kbdbulg) (0402:00030402) | en-US: [United States-International keyboard](https://learn.microsoft.com/globalization/keyboards/kbdusx) (0409:00020409) |
@@ -303,11 +304,11 @@ Sample output from my Windows 11 22H2 22621.1702:
 | Central Kurdish | ku-Arab-IQ: [Central Kurdish keyboard](https://learn.microsoft.com/globalization/keyboards/kbdkurd) (0492:00000492) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Chechen | ru-RU: [Russian keyboard](https://learn.microsoft.com/globalization/keyboards/kbdru) (0419:00000419) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Cherokee | chr-Cher-US: [Cherokee Nation keyboard](https://learn.microsoft.com/globalization/keyboards/kbdcher) (045C:0000045C) | chr-Cher-US: [Cherokee Phonetic keyboard](https://learn.microsoft.com/globalization/keyboards/kbdcherp) (045C:0001045C)<br>en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
-| Chinese | zh-CN: Microsoft Pinyin (0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}) |  |
+| Chinese | zh-CN: [Microsoft Pinyin](https://learn.microsoft.com/globalization/input/simplified-chinese-ime) (0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}) |  |
 | Chinese (Simplified, Hong Kong SAR) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |  |
 | Chinese (Simplified, Macao SAR) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |  |
-| Chinese (Traditional) | zh-TW: Microsoft Quick (0404:{531FDEBF-9B4C-4A43-A2AA-960E8FCDC732}{6024B45F-5C54-11D4-B921-0080C882687E}) |  |
-| Chinese (Traditional, Taiwan) | zh-TW: Microsoft Bopomofo (0404:{B115690A-EA02-48D5-A231-E3578D2FDF80}{B2F9C502-1742-11D4-9790-0080C882687E}) |  |
+| Chinese (Traditional) | zh-TW: [Microsoft Quick](https://learn.microsoft.com/globalization/input/traditional-chinese-ime) (0404:{531FDEBF-9B4C-4A43-A2AA-960E8FCDC732}{6024B45F-5C54-11D4-B921-0080C882687E}) |  |
+| Chinese (Traditional, Taiwan) | zh-TW: [Microsoft Bopomofo](https://learn.microsoft.com/globalization/input/traditional-chinese-ime) (0404:{B115690A-EA02-48D5-A231-E3578D2FDF80}{B2F9C502-1742-11D4-9790-0080C882687E}) |  |
 | Church Slavic | ru-RU: [Russian keyboard](https://learn.microsoft.com/globalization/keyboards/kbdru) (0419:00000419) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Colognian | de-DE: [German keyboard](https://learn.microsoft.com/globalization/keyboards/kbdgr) (0407:00000407) |  |
 | Cornish | en-GB: [United Kingdom keyboard](https://learn.microsoft.com/globalization/keyboards/kbduk) (0809:00000809) |  |
@@ -421,7 +422,7 @@ Sample output from my Windows 11 22H2 22621.1702:
 | Italian | it-IT: [Italian keyboard](https://learn.microsoft.com/globalization/keyboards/kbdit) (0410:00000410) |  |
 | Italian (Switzerland) | it-CH: [Swiss French keyboard](https://learn.microsoft.com/globalization/keyboards/kbdsf_2) (0810:0000100C) | it-CH: [Italian keyboard](https://learn.microsoft.com/globalization/keyboards/kbdit) (0810:00000410) |
 | Italian (Vatican City) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |  |
-| Japanese | ja-JP: Microsoft IME (0411:{03B5835F-F03C-411B-9CE2-AA23E1171E36}{A76C93D9-5523-4E90-AAFA-4DB112F9AC76}) |  |
+| Japanese | ja-JP: [Microsoft IME](https://learn.microsoft.com/globalization/input/japanese-ime) (0411:{03B5835F-F03C-411B-9CE2-AA23E1171E36}{A76C93D9-5523-4E90-AAFA-4DB112F9AC76}) |  |
 | Javanese | jv: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0C00:00000409) |  |
 | Javanese (Javanese) | jv-Java: [Javanese keyboard](https://learn.microsoft.com/globalization/keyboards/kbdjav) (0C00:00110C00) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Kalaallisut | kl-GL: [Danish keyboard](https://learn.microsoft.com/globalization/keyboards/kbdda) (046F:00000406) |  |
@@ -436,7 +437,7 @@ Sample output from my Windows 11 22H2 22621.1702:
 | Kiswahili (Tanzania) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |  |
 | Kiswahili (Uganda) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |  |
 | Konkani | kok-IN: [Devanagari - INSCRIPT keyboard](https://learn.microsoft.com/globalization/keyboards/kbdindev) (0457:00000439) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
-| Korean | ko-KR: Microsoft IME (0412:{A028AE76-01B1-46C2-99C4-ACD9858AE02F}{B5FE1F02-D5F2-4445-9C03-C568F23C99A1}) |  |
+| Korean | ko-KR: [Microsoft IME](https://learn.microsoft.com/globalization/input/korean-ime) (0412:{A028AE76-01B1-46C2-99C4-ACD9858AE02F}{B5FE1F02-D5F2-4445-9C03-C568F23C99A1}) |  |
 | Korean (North Korea) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |  |
 | Kyrgyz | ky-KG: [Kyrgyz Cyrillic keyboard](https://learn.microsoft.com/globalization/keyboards/kbdkyr) (0440:00000440) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Kʼicheʼ | quc-Latn-GT: [Latin American keyboard](https://learn.microsoft.com/globalization/keyboards/kbdla) (0486:0000080A) |  |
@@ -581,7 +582,7 @@ Sample output from my Windows 11 22H2 22621.1702:
 | Thai | th-TH: [Thai Kedmanee keyboard](https://learn.microsoft.com/globalization/keyboards/kbdth0) (041E:0000041E) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Tibetan | bo-CN: [Tibetan (PRC) - Updated keyboard](https://learn.microsoft.com/globalization/keyboards/kbdtiprd) (0451:00010451) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Tibetan (India) | bo-CN: [Tibetan (PRC) keyboard](https://learn.microsoft.com/globalization/keyboards/kbdtiprc) (0451:00000451) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
-| Tigrinya | ti-ET: Tigrinya Input Method (0473:{E429B25A-E5D3-4D1F-9BE3-0C608477E3A1}{3CAB88B7-CC3E-46A6-9765-B772AD7761FF}) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
+| Tigrinya | ti-ET: [Tigrinya Input Method](https://learn.microsoft.com/globalization/input/tigrinya-ime) (0473:{E429B25A-E5D3-4D1F-9BE3-0C608477E3A1}{3CAB88B7-CC3E-46A6-9765-B772AD7761FF}) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Turkish | tr-TR: [Turkish Q keyboard](https://learn.microsoft.com/globalization/keyboards/kbdtuq) (041F:0000041F) |  |
 | Turkmen | tk-TM: [Turkmen keyboard](https://learn.microsoft.com/globalization/keyboards/kbdturme) (0442:00000442) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Ukrainian | uk-UA: [Ukrainian (Enhanced) keyboard](https://learn.microsoft.com/globalization/keyboards/kbdur1) (0422:00020422) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
@@ -593,14 +594,13 @@ Sample output from my Windows 11 22H2 22621.1702:
 | Uzbek (Arabic) | ps-AF: [Pashto (Afghanistan) keyboard](https://learn.microsoft.com/globalization/keyboards/kbdpash) (0463:00000463) | en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Uzbek (Cyrillic) | uz-Cyrl-UZ: [Uzbek Cyrillic keyboard](https://learn.microsoft.com/globalization/keyboards/kbduzb) (0843:00000843) | uz-Latn-UZ: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0443:00000409) |
 | Valencian (Spain) | ca-ES-valencia: [Spanish keyboard](https://learn.microsoft.com/globalization/keyboards/kbdsp) (0803:0000040A) |  |
-| Vietnamese | vi-VN: Vietnamese Telex (042A:{C2CB2CF0-AF47-413E-9780-8BC3A3C16068}{5FB02EC5-0A77-4684-B4FA-DEF8A2195628}) | vi-VN: Vietnamese Number Key-Based (042A:{C2CB2CF0-AF47-413E-9780-8BC3A3C16068}{591AE943-56BE-48F6-8966-06B43915CC5A})<br>vi-VN: [Vietnamese keyboard](https://learn.microsoft.com/globalization/keyboards/kbdvntc) (042A:0000042A)<br>en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
+| Vietnamese | vi-VN: [Vietnamese Telex](https://learn.microsoft.com/globalization/input/vietnamese-ime) (042A:{C2CB2CF0-AF47-413E-9780-8BC3A3C16068}{5FB02EC5-0A77-4684-B4FA-DEF8A2195628}) | vi-VN: [Vietnamese Number Key-Based](https://learn.microsoft.com/globalization/input/vietnamese-ime) (042A:{C2CB2CF0-AF47-413E-9780-8BC3A3C16068}{591AE943-56BE-48F6-8966-06B43915CC5A})<br>vi-VN: [Vietnamese keyboard](https://learn.microsoft.com/globalization/keyboards/kbdvntc) (042A:0000042A)<br>en-US: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0409:00000409) |
 | Walser | de-CH: [Swiss German keyboard](https://learn.microsoft.com/globalization/keyboards/kbdsg) (0807:00000807) |  |
 | Welsh | cy-GB: [United Kingdom Extended keyboard](https://learn.microsoft.com/globalization/keyboards/kbdukx) (0452:00000452) | en-GB: [United Kingdom keyboard](https://learn.microsoft.com/globalization/keyboards/kbduk) (0809:00000809) |
 | Western Frisian | fy-NL: [United States-International keyboard](https://learn.microsoft.com/globalization/keyboards/kbdusx) (0462:00020409) |  |
 | Wolof | wo-SN: [Wolof keyboard](https://learn.microsoft.com/globalization/keyboards/kbdwol) (0488:00000488) |  |
 | Xitsonga | ts-ZA: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0431:00000409) |  |
-| Yi | ii-CN: Yi Input Method (0478:{E429B25A-E5D3-4D1F-9BE3-0C608477E3A1}{409C8376-007B-4357-AE8E-26316EE3FB0D}) | zh-CN: Microsoft Pinyin (0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}) |
+| Yi | ii-CN: [Yi Input Method](https://learn.microsoft.com/globalization/input/yi-ime) (0478:{E429B25A-E5D3-4D1F-9BE3-0C608477E3A1}{409C8376-007B-4357-AE8E-26316EE3FB0D}) | zh-CN: [Microsoft Pinyin](https://learn.microsoft.com/globalization/input/simplified-chinese-ime) (0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}) |
 | Yoruba | yo-NG: [Yoruba keyboard](https://learn.microsoft.com/globalization/keyboards/kbdyba) (046A:0000046A) |  |
 | isiXhosa | xh-ZA: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0434:00000409) |  |
 | isiZulu | zu-ZA: [US keyboard](https://learn.microsoft.com/globalization/keyboards/kbdus_7) (0435:00000409) |  |
-
