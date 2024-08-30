@@ -225,7 +225,8 @@ std::wstring GetKeyboardLayoutLink(_In_ LPCWSTR pwszKLID)
     }
 
     wchar_t buf[MAX_PATH] = {};
-    swprintf_s(buf, std::size(buf), L"https://learn.microsoft.com/globalization/keyboards/%s", path.c_str());
+    // Relative link
+    swprintf_s(buf, std::size(buf), L"/globalization/keyboards/%s", path.c_str());
 
 #ifndef NDEBUG
     {
@@ -302,7 +303,8 @@ std::wstring GetTSFProfileLink(const LCID& langId, const CLSID& clsId, const GUI
     if (path.empty())
         return buf;
 
-    swprintf_s(buf, std::size(buf), L"https://learn.microsoft.com/globalization/input/%s", path.c_str());
+    // Relative link
+    swprintf_s(buf, std::size(buf), L"/globalization/input/%s", path.c_str());
 
     cache[langId] = buf;
 
@@ -644,8 +646,8 @@ int main()
 
     ::CoInitialize(0);
 
-    // Keyboard identifiers
-    // https://learn.microsoft.com/windows-hardware/manufacture/desktop/windows-language-pack-default-values#keyboard-identifiers
+    // Keyboard identifiers relative link
+    // /windows-hardware/manufacture/desktop/windows-language-pack-default-values#keyboard-identifiers
     {
         std::vector<std::wstring> layouts = EnumInstalledKeyboardLayouts();
 
@@ -670,8 +672,8 @@ int main()
 
     std::wcout << std::endl;
 
-    // Input method editors
-    // https://learn.microsoft.com/windows-hardware/manufacture/desktop/windows-language-pack-default-values#input-method-editors
+    // Input method editors relative link
+    // /windows-hardware/manufacture/desktop/windows-language-pack-default-values#input-method-editors
     {
         auto profiles = EnumInstalledTSFProfiles();
 
@@ -701,8 +703,8 @@ int main()
 
     std::wcout << std::endl;
 
-    // Input locales
-    // https://learn.microsoft.com/windows-hardware/manufacture/desktop/default-input-locales-for-windows-language-packs#input-locales
+    // Input locales relative link
+    // /windows-hardware/manufacture/desktop/default-input-locales-for-windows-language-packs#input-locales
     {
         auto locales = EnumInstalledLocales();
 
@@ -757,7 +759,7 @@ int main()
             ++count;
         }
 
-        std::wcout << L"Printed " << count << " languages out of " << locales.size() << L"\n";
+        std::wcout << L"Printed " << count << " languages out of " << locales.size();
     }
 
     return 0;
