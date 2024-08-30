@@ -166,7 +166,6 @@ std::wstring GetKeyboardLayoutPath(_In_ LPCWSTR pwszKLID)
     return filePath;
 }
 
-
 std::wstring GetKeyboardLayoutLink(_In_ LPCWSTR pwszKLID)
 {
     static std::map<std::wstring, std::wstring> cache;
@@ -252,6 +251,60 @@ std::wstring GetKeyboardLayoutLink(_In_ LPCWSTR pwszKLID)
 #endif // NDEBUG
 
     cache[pwszKLID] = buf;
+
+    return buf;
+}
+
+std::wstring GetTSFProfileLink(const LCID& langId, const CLSID& clsId, const GUID& profileGuid)
+{
+    static std::map<LCID, std::wstring> cache;
+    if (cache.find(langId) != cache.end())
+    {
+        return cache[langId];
+    }
+
+    struct KnownTSFProfiles
+    {
+        LCID langId;
+        const WCHAR* name;
+    } known[] =
+    {
+        { 0x0404, L"traditional-chinese-ime" },
+        { 0x0411, L"japanese-ime" },
+        { 0x0412, L"korean-ime" },
+        { 0x042a, L"vietnamese-ime" },
+        { 0x0439, L"hindi-ime" },
+        { 0x0445, L"bengali-ime" },
+        { 0x0446, L"punjabi-ime" },
+        { 0x0447, L"gujarati-ime" },
+        { 0x0448, L"odia-ime" },
+        { 0x0449, L"tamil-ime" },
+        { 0x044a, L"telugu-ime" },
+        { 0x044b, L"kannada-ime" },
+        { 0x044c, L"malayalam-ime" },
+        { 0x044e, L"marathi-ime" },
+        { 0x045e, L"amharic-ime" },
+        { 0x0461, L"hindi-ime" },
+        { 0x0473, L"tigrinya-ime" },
+        { 0x0478, L"yi-ime" },
+        { 0x0804, L"simplified-chinese-ime" },
+        { 0x0849, L"tamil-ime" },
+    };
+
+    std::wstring path;
+    auto it = std::find_if(std::begin(known), std::end(known), [langId](const auto& p) { return p.langId == langId; });
+    if (it != std::end(known))
+    {
+        path = it->name;
+    }
+
+    wchar_t buf[MAX_PATH] = {};
+    if (path.empty())
+        return buf;
+
+    swprintf_s(buf, std::size(buf), L"https://learn.microsoft.com/globalization/input/input-method-editors/%s", path.c_str());
+
+    cache[langId] = buf;
 
     return buf;
 }
@@ -528,7 +581,20 @@ std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const 
         GUID guid;
         CHECK_EQ(::IIDFromString(inputProfileTokens[1].substr(guidLen).c_str(), &guid), S_OK);
 
-        profileDisplayName = GetTSFProfileDisplayName(langId, clsId, guid);
+        std::wstring tsfProfileDisplayName = GetTSFProfileDisplayName(langId, clsId, guid);
+        std::wstring tsfProfileLink = GetTSFProfileLink(langId, clsId, guid);
+
+        wchar_t string[MAX_PATH] = {};
+        if (!tsfProfileLink.empty())
+        {
+            swprintf_s(string, std::size(string), L"[%s](%s)", tsfProfileDisplayName.c_str(), tsfProfileLink.c_str());
+        }
+        else
+        {
+            swprintf_s(string, std::size(string), L"%s", tsfProfileDisplayName.c_str());
+        }
+
+        profileDisplayName = string;
     }
     else // KLID
     {
