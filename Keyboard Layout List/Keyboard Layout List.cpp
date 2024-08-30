@@ -302,7 +302,7 @@ std::wstring GetTSFProfileLink(const LCID& langId, const CLSID& clsId, const GUI
     if (path.empty())
         return buf;
 
-    swprintf_s(buf, std::size(buf), L"https://learn.microsoft.com/globalization/input/input-method-editors/%s", path.c_str());
+    swprintf_s(buf, std::size(buf), L"https://learn.microsoft.com/globalization/input/%s", path.c_str());
 
     cache[langId] = buf;
 
