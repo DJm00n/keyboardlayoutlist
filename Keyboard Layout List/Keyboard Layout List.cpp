@@ -16,10 +16,6 @@
 #include <fcntl.h>
 #include <io.h>
 
-#include <atlbase.h>
-#include <msxml6.h>
-#include <comutil.h>
-
 #define CHECK(x) \
   if (!(x)) LogMessageFatal(__FILE__, __LINE__).stream() << "Check failed: " #x
 #define CHECK_EQ(x, y) CHECK((x) == (y))
@@ -63,11 +59,11 @@ private:
 
 namespace utils
 {
-	bool endsWith(const std::wstring& s, const std::wstring& suffix)
-	{
-		return s.size() >= suffix.size() &&
-			s.substr(s.size() - suffix.size()) == suffix;
-	}
+    bool endsWith(const std::wstring& s, const std::wstring& suffix)
+    {
+        return s.size() >= suffix.size() &&
+            s.substr(s.size() - suffix.size()) == suffix;
+    }
 
     std::vector<std::wstring> split(const std::wstring& s, const std::wstring& delimiter, const bool removeEmptyEntries = false)
     {
@@ -174,28 +170,6 @@ std::wstring GetKeyboardLayoutDisplayName(_In_ LPCWSTR pwszKLID)
     return layoutDisplayName;
 }
 
-std::wstring GetKeyboardLayoutDllPath(_In_ LPCWSTR pwszKLID)
-{
-    HKEY key;
-    CHECK_EQ(::RegOpenKeyExW(HKEY_LOCAL_MACHINE, KeyboardLayoutsRegistryPath, 0, KEY_READ, &key), ERROR_SUCCESS);
-
-    WCHAR layoutFileName[MAX_PATH] = {};
-    DWORD layoutFileNameSize = static_cast<DWORD>(std::size(layoutFileName));
-
-    LSTATUS errorCode = ::RegGetValueW(key, pwszKLID, L"Layout File", RRF_RT_REG_SZ, nullptr, layoutFileName, &layoutFileNameSize);
-
-    if (errorCode != ERROR_SUCCESS)
-    {
-        return {};
-    }
-
-    WCHAR filePath[MAX_PATH] = {};
-    ::GetSystemDirectoryW(filePath, static_cast<UINT>(std::size(filePath)));
-    ::PathAppendW(filePath, layoutFileName);
-
-    return filePath;
-}
-
 std::wstring GetKeyboardLayoutLink(_In_ LPCWSTR pwszKLID)
 {
     static std::map<std::wstring, std::wstring> cache;
@@ -204,85 +178,299 @@ std::wstring GetKeyboardLayoutLink(_In_ LPCWSTR pwszKLID)
         return cache[pwszKLID];
     }
 
-    std::wstring path = GetKeyboardLayoutDllPath(pwszKLID);
-    path = ::PathFindFileNameW(path.data());
-    ::PathRemoveExtensionW(const_cast<LPWSTR>(path.data()));
-    utils::towlower(path);
-
-    struct Exceptions
     {
-        LCID klid;
-        const WCHAR* name;
-    } exceptions[] =
-    {
-        { 0x00000404, L"kbdus_4" },
-        { 0x00000409, L"kbdus_7" },
-        { 0x00000416, L"kbdbr_1" },
-        { 0x0000041a, L"kbdcr_2" },
-        { 0x00000424, L"kbdcr_1" },
-        { 0x00000432, L"kbdnso_2" },
-        { 0x0000046c, L"kbdnso_1" },
-        { 0x0000046e, L"kbdsf_1" },
-        { 0x00000804, L"kbdus_2" },
-        { 0x0000080c, L"kbdbe_2" },
-        { 0x00000813, L"kbdbe_1" },
-        { 0x0000083b, L"kbdfi1_2" },
-        { 0x00000c04, L"kbdus_5" },
-        { 0x00001004, L"kbdus_3" },
-        { 0x0000100c, L"kbdsf_2" },
-        { 0x00001404, L"kbdus_6" },
-        { 0x00010402, L"kbdus_1" },
-        { 0x00010416, L"kbdbr_2" },
-        { 0x0001083b, L"kbdfi1_1" },
-        { 0x00010c00, L"kbdmyan_1" },
-        { 0x00130c00, L"kbdmyan_2" },
-    };
+        wchar_t* langIdStrTmp = nullptr;
+        LCID klid = static_cast<LCID>(std::wcstoul(pwszKLID, &langIdStrTmp, 16));
+        CHECK(pwszKLID != langIdStrTmp);
 
-    wchar_t* langIdStrTmp = nullptr;
-    LCID klid = static_cast<LCID>(std::wcstoul(pwszKLID, &langIdStrTmp, 16));
-    CHECK(pwszKLID != langIdStrTmp);
-
-    auto it = std::find_if(std::begin(exceptions), std::end(exceptions), [klid](const auto& p) { return p.klid == klid; });
-    if (it != std::end(exceptions))
-    {
-        path = it->name;
+        // Custom layout
+        if ((klid & 0xa0000000) == 0xa0000000)
+        {
+            return {};
+        }
     }
 
-    // Custom layout
-    if ((klid & 0xa0000000) == 0xa0000000)
+    struct KnownKLIDs
     {
-        return {};
+        LPCWSTR klid;
+        LPCWSTR name;
+    } known[] =
+    {
+        { L"00000401", L"kbda1"},
+        { L"00000402", L"kbdbu"},
+        { L"00000404", L"kbdus_4"},
+        { L"00000405", L"kbdcz"},
+        { L"00000406", L"kbdda"},
+        { L"00000407", L"kbdgr"},
+        { L"00000408", L"kbdhe"},
+        { L"00000409", L"kbdus_7"},
+        { L"0000040A", L"kbdsp"},
+        { L"0000040B", L"kbdfi"},
+        { L"0000040C", L"kbdfr"},
+        { L"0000040E", L"kbdhu"},
+        { L"0000040F", L"kbdic"},
+        { L"0000040A", L"kbdsp"},
+        { L"0000040B", L"kbdfi"},
+        { L"0000040C", L"kbdfr"},
+        { L"0000040D", L"kbdheb"},
+        { L"0000040E", L"kbdhu"},
+        { L"0000040F", L"kbdic"},
+        { L"00000410", L"kbdit"},
+        { L"00000411", L"kbdjpn"},
+        { L"00000412", L"kbdkor"},
+        { L"00000413", L"kbdne"},
+        { L"00000414", L"kbdno"},
+        { L"00000415", L"kbdpl1"},
+        { L"00000416", L"kbdbr_1"},
+        { L"00000418", L"kbdro"},
+        { L"00000419", L"kbdru"},
+        { L"0000041A", L"kbdcr_2"},
+        { L"0000041B", L"kbdsl"},
+        { L"0000041C", L"kbdal"},
+        { L"0000041D", L"kbdsw"},
+        { L"0000041E", L"kbdth0"},
+        { L"0000041F", L"kbdtuq"},
+        { L"0000041A", L"kbdcr_2"},
+        { L"0000041B", L"kbdsl"},
+        { L"0000041C", L"kbdal"},
+        { L"0000041D", L"kbdsw"},
+        { L"0000041E", L"kbdth0"},
+        { L"0000041F", L"kbdtuq"},
+        { L"00000420", L"kbdurdu"},
+        { L"00000422", L"kbdur"},
+        { L"00000423", L"kbdblr"},
+        { L"00000424", L"kbdcr_1"},
+        { L"00000425", L"kbdest"},
+        { L"00000426", L"kbdlv"},
+        { L"00000427", L"kbdlt"},
+        { L"00000428", L"kbdtajik"},
+        { L"00000429", L"kbdfa"},
+        { L"0000042A", L"kbdvntc"},
+        { L"0000042C", L"kbdazel"},
+        { L"0000042A", L"kbdvntc"},
+        { L"0000042B", L"kbdarme"},
+        { L"0000042C", L"kbdazel"},
+        { L"0000042E", L"kbdsorst"},
+        { L"0000042F", L"kbdmac"},
+        { L"00000432", L"kbdnso_2"},
+        { L"00000437", L"kbdgeo"},
+        { L"00000438", L"kbdfo"},
+        { L"00000439", L"kbdindev"},
+        { L"0000043A", L"kbdmlt47"},
+        { L"0000043B", L"kbdno1"},
+        { L"0000043F", L"kbdkaz"},
+        { L"0000043A", L"kbdmlt47"},
+        { L"0000043B", L"kbdno1"},
+        { L"0000043F", L"kbdkaz"},
+        { L"00000440", L"kbdkyr"},
+        { L"00000442", L"kbdturme"},
+        { L"00000444", L"kbdtat"},
+        { L"00000445", L"kbdinben"},
+        { L"00000446", L"kbdinpun"},
+        { L"00000447", L"kbdinguj"},
+        { L"00000448", L"kbdinori"},
+        { L"00000449", L"kbdintam"},
+        { L"0000044A", L"kbdintel"},
+        { L"0000044B", L"kbdinkan"},
+        { L"0000044C", L"kbdinmal"},
+        { L"0000044D", L"kbdinasa"},
+        { L"0000044E", L"kbdinmar"},
+        { L"0000044A", L"kbdintel"},
+        { L"0000044B", L"kbdinkan"},
+        { L"0000044C", L"kbdinmal"},
+        { L"0000044D", L"kbdinasa"},
+        { L"0000044E", L"kbdinmar"},
+        { L"00000450", L"kbdmon"},
+        { L"00000451", L"kbdtiprc"},
+        { L"00000452", L"kbdukx"},
+        { L"00000453", L"kbdkhmr"},
+        { L"00000454", L"kbdlao"},
+        { L"0000045A", L"kbdsyr1"},
+        { L"0000045B", L"kbdsn1"},
+        { L"0000045C", L"kbdcher"},
+        { L"0000045A", L"kbdsyr1"},
+        { L"0000045B", L"kbdsn1"},
+        { L"0000045C", L"kbdcher"},
+        { L"00000461", L"kbdnepr"},
+        { L"00000463", L"kbdpash"},
+        { L"00000465", L"kbddiv1"},
+        { L"00000468", L"kbdhau"},
+        { L"0000046A", L"kbdyba"},
+        { L"0000046C", L"kbdnso_1"},
+        { L"0000046D", L"kbdbash"},
+        { L"0000046E", L"kbdsf_1"},
+        { L"0000046A", L"kbdyba"},
+        { L"0000046C", L"kbdnso_1"},
+        { L"0000046D", L"kbdbash"},
+        { L"0000046E", L"kbdsf_1"},
+        { L"0000046F", L"kbdgrlnd"},
+        { L"00000470", L"kbdibo"},
+        { L"00000474", L"kbdgn"},
+        { L"00000475", L"kbdhaw"},
+        { L"00000480", L"kbdughr"},
+        { L"00000481", L"kbdmaori"},
+        { L"00000485", L"kbdyak"},
+        { L"00000488", L"kbdwol"},
+        { L"00000492", L"kbdkurd"},
+        { L"00000804", L"kbdus_2"},
+        { L"00000807", L"kbdsg"},
+        { L"00000809", L"kbduk"},
+        { L"0000080A", L"kbdla"},
+        { L"0000080C", L"kbdbe_2"},
+        { L"0000080A", L"kbdla"},
+        { L"0000080C", L"kbdbe_2"},
+        { L"00000813", L"kbdbe_1"},
+        { L"00000816", L"kbdpo"},
+        { L"0000081A", L"kbdycl"},
+        { L"0000081A", L"kbdycl"},
+        { L"0000082C", L"kbdaze"},
+        { L"0000082C", L"kbdaze"},
+        { L"0000083B", L"kbdfi1_2"},
+        { L"0000083B", L"kbdfi1_2"},
+        { L"00000843", L"kbduzb"},
+        { L"00000850", L"kbdmonmo"},
+        { L"0000085D", L"kbdiulat"},
+        { L"0000085F", L"kbdtzm"},
+        { L"0000085D", L"kbdiulat"},
+        { L"0000085F", L"kbdtzm"},
+        { L"00000C1A", L"kbdycc"},
+        { L"00000C51", L"kbddzo"},
+        { L"00000C04", L"kbdus_5"},
+        { L"00000C0C", L"kbdfc"},
+        { L"00000C1A", L"kbdycc"},
+        { L"00001004", L"kbdus_3"},
+        { L"00001009", L"kbdca"},
+        { L"0000100C", L"kbdsf_2"},
+        { L"0000100C", L"kbdsf_2"},
+        { L"0000105F", L"kbdtifi"},
+        { L"0000105F", L"kbdtifi"},
+        { L"00001404", L"kbdus_6"},
+        { L"00001409", L"kbdmaori"},
+        { L"00001809", L"kbdir"},
+        { L"0000201A", L"kbdbhc"},
+        { L"0000201A", L"kbdbhc"},
+        { L"00004009", L"kbdinen"},
+        { L"00010401", L"kbda2"},
+        { L"00010402", L"kbdus_1"},
+        { L"00010405", L"kbdcz1"},
+        { L"00010407", L"kbdgr1"},
+        { L"00010408", L"kbdhe220"},
+        { L"00010409", L"kbddv"},
+        { L"0001040A", L"kbdes"},
+        { L"0001040E", L"kbdhu1"},
+        { L"00010410", L"kbdit142"},
+        { L"00010415", L"kbdpl"},
+        { L"00010416", L"kbdbr_2"},
+        { L"00010418", L"kbdrost"},
+        { L"00010419", L"kbdru1"},
+        { L"0001041B", L"kbdsl1"},
+        { L"0001041E", L"kbdth1"},
+        { L"0001041F", L"kbdtuf"},
+        { L"00010426", L"kbdlv1"},
+        { L"00010427", L"kbdlt1"},
+        { L"0001042F", L"kbdmacst"},
+        { L"0001042B", L"kbdarmw"},
+        { L"0001042C", L"kbdazst"},
+        { L"0001042E", L"kbdsorex"},
+        { L"0001042F", L"kbdmacst"},
+        { L"00010437", L"kbdgeoqw"},
+        { L"00010439", L"kbdinhin"},
+        { L"0001043A", L"kbdmlt48"},
+        { L"0001043B", L"kbdsmsno"},
+        { L"00010444", L"kbdtt102"},
+        { L"00010445", L"kbdinbe1"},
+        { L"00010451", L"kbdtiprd"},
+        { L"00010453", L"kbdkni"},
+        { L"0001045C", L"kbdcherp"},
+        { L"0001045D", L"kbdinuk2"},
+        { L"0001045A", L"kbdsyr2"},
+        { L"0001045B", L"kbdsw09"},
+        { L"0001045C", L"kbdcherp"},
+        { L"0001045D", L"kbdinuk2"},
+        { L"00010465", L"kbddiv2"},
+        { L"00010480", L"kbdughr1"},
+        { L"0001080C", L"kbdbene"},
+        { L"0001083B", L"kbdfi1_1"},
+        { L"0001083B", L"kbdfi1_1"},
+        { L"00010850", L"kbdmonst"},
+        { L"00010C00", L"kbdmyan_1"},
+        { L"00011009", L"kbdcan"},
+        { L"0001105F", L"kbdtifi2"},
+        { L"00011809", L"kbdgae"},
+        { L"00020401", L"kbda3"},
+        { L"00020402", L"kbdbgph"},
+        { L"00020405", L"kbdcz2"},
+        { L"00020408", L"kbdhe319"},
+        { L"00020409", L"kbdusx"},
+        { L"0002040D", L"kbdhebl3"},
+        { L"0002040D", L"kbdhebl3"},
+        { L"00020418", L"kbdropr"},
+        { L"00020419", L"kbdrum"},
+        { L"0002041E", L"kbdth2"},
+        { L"00020422", L"kbdur1"},
+        { L"00020426", L"kbdlvst"},
+        { L"00020427", L"kbdlt2"},
+        { L"0002042B", L"kbdarmph"},
+        { L"0002042E", L"kbdsors1"},
+        { L"0002042B", L"kbdarmph"},
+        { L"0002042E", L"kbdsors1"},
+        { L"00020437", L"kbdgeoer"},
+        { L"00020445", L"kbdinbe2"},
+        { L"00020449", L"kbdtam99"},
+        { L"0002083B", L"kbdsmsfi"},
+        { L"00020C00", L"kbdntl"},
+        { L"00030402", L"kbdbulg"},
+        { L"00030408", L"kbdhela2"},
+        { L"00030409", L"kbdusl"},
+        { L"0003041E", L"kbdth3"},
+        { L"0003042B", L"kbdarmty"},
+        { L"0003042B", L"kbdarmty"},
+        { L"00030437", L"kbdgeome"},
+        { L"00030449", L"kbdinen"},
+        { L"00030C00", L"kbdtaile"},
+        { L"00040402", L"kbdbgph1"},
+        { L"00040408", L"kbdhela3"},
+        { L"00040409", L"kbdusr"},
+        { L"00040437", L"kbdgeooa"},
+        { L"00040C00", L"kbdogham"},
+        { L"00050408", L"kbdgkl"},
+        { L"00050409", L"kbdusa"},
+        { L"00050429", L"kbdfar"},
+        { L"00060408", L"kbdhept"},
+        { L"00070C00", L"kbdlisub"},
+        { L"00080C00", L"kbdlisus"},
+        { L"00090C00", L"kbdnko"},
+        { L"00090C00", L"kbdnko"},
+        { L"000A0C00", L"kbdphags"},
+        { L"000B0C00", L"kbdbug"},
+        { L"000C0C00", L"kbdgthc"},
+        { L"000D0C00", L"kbdolch"},
+        { L"000E0C00", L"kbdosm"},
+        { L"000F0C00", L"kbdoldit"},
+        { L"00100C00", L"kbdsora"},
+        { L"00110C00", L"kbdjav"},
+        { L"00110C00", L"kbdjav"},
+        { L"00120C00", L"kbdfthrk"},
+        { L"00130C00", L"kbdmyan_2"},
+        { L"00130C00", L"kbdmyan_2"},
+        { L"00140C00", L"kbdadlm"},
+        { L"00150C00", L"kbdosa"},
+    };
+
+    std::wstring path;
+    auto it = std::find_if(std::begin(known), std::end(known), [&pwszKLID](const auto& p) { return _wcsicmp(p.klid, pwszKLID) == 0; });
+    if (it != std::end(known))
+    {
+        path = it->name;
     }
 
     wchar_t buf[MAX_PATH] = {};
     swprintf_s(buf, std::size(buf), L"https://learn.microsoft.com/globalization/keyboards/%s", path.c_str());
 
-#ifndef NDEBUG
-    {
-        HRESULT hr;
-        CComPtr<IXMLHTTPRequest> request;
-
-        hr = request.CoCreateInstance(CLSID_XMLHTTP60);
-        hr = request->open(_bstr_t("GET"), _bstr_t(buf), _variant_t(VARIANT_FALSE), _variant_t(), _variant_t());
-        hr = request->send(_variant_t());
-
-        // get status - 200 if success
-        long status;
-        hr = request->get_status(&status);
-
-        char buf2[MAX_PATH] = {};
-        WideCharToMultiByte(CP_UTF8, 0, buf, MAX_PATH, buf2, MAX_PATH, 0, nullptr);
-
-        char buf3[MAX_PATH] = {};
-        WideCharToMultiByte(CP_UTF8, 0, pwszKLID, KL_NAMELENGTH - 1, buf3, MAX_PATH, 0, nullptr);
-
-        if (!(status == 200)) LogMessageFatal(__FILE__, __LINE__).stream() << "Cannot load: " << buf2 << " for " << buf3;
-    }
-#endif // NDEBUG
-
     cache[pwszKLID] = buf;
 
     return buf;
+
 }
 
 std::wstring GetTSFProfileLink(const LCID& langId, const CLSID& clsId, const GUID& profileGuid)
@@ -401,6 +589,7 @@ std::wstring GetTSFProfileString(const LCID& langId, const CLSID& clsId, const G
     return profileStr;
 }
 
+// Same as ITfInputProcessorProfiles::GetLanguageProfileDescription
 std::wstring GetTSFProfileDisplayName(const LCID& langId, const CLSID& clsId, const GUID& profileGuid)
 {
     typedef HRESULT(WINAPI* SHLoadIndirectStringFunc)(PCWSTR pszSource, PWSTR pszOutBuf, UINT cchOutBuf, void** ppvReserved);
