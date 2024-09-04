@@ -61,50 +61,80 @@ private:
     void operator=(LogMessageFatal) = delete;
 };
 
-bool endsWith(const std::wstring& s, const std::wstring& suffix)
+namespace utils
 {
-    return s.size() >= suffix.size() &&
-        s.substr(s.size() - suffix.size()) == suffix;
-}
+	bool endsWith(const std::wstring& s, const std::wstring& suffix)
+	{
+		return s.size() >= suffix.size() &&
+			s.substr(s.size() - suffix.size()) == suffix;
+	}
 
-std::vector<std::wstring> split(const std::wstring& s, const std::wstring& delimiter, const bool removeEmptyEntries = false)
-{
-    std::vector<std::wstring> tokens;
-
-    for (size_t start = 0, end; start < s.length(); start = end + delimiter.length())
+    std::vector<std::wstring> split(const std::wstring& s, const std::wstring& delimiter, const bool removeEmptyEntries = false)
     {
-        size_t position = s.find(delimiter, start);
-        end = position != std::wstring::npos ? position : s.length();
+        std::vector<std::wstring> tokens;
 
-        std::wstring token = s.substr(start, end - start);
-        if (!removeEmptyEntries || !token.empty())
+        for (size_t start = 0, end; start < s.length(); start = end + delimiter.length())
         {
-            tokens.push_back(token);
+            size_t position = s.find(delimiter, start);
+            end = position != std::wstring::npos ? position : s.length();
+
+            std::wstring token = s.substr(start, end - start);
+            if (!removeEmptyEntries || !token.empty())
+            {
+                tokens.push_back(token);
+            }
+        }
+
+        if (!removeEmptyEntries &&
+            (s.empty() || endsWith(s, delimiter)))
+        {
+            tokens.push_back(L"");
+        }
+
+        return tokens;
+    }
+
+    void towlower(std::wstring& string)
+    {
+        for (wchar_t& ch : string)
+        {
+            ch = std::towlower(ch);
         }
     }
 
-    if (!removeEmptyEntries &&
-        (s.empty() || endsWith(s, delimiter)))
+    void towupper(std::wstring& string)
     {
-        tokens.push_back(L"");
+        for (wchar_t& ch : string)
+        {
+            ch = std::towupper(ch);
+        }
     }
 
-    return tokens;
-}
-
-void towlower(std::wstring& string)
-{
-    for (wchar_t& ch : string)
+    size_t GetGuidStringLength()
     {
-        ch = std::towlower(ch);
+        wchar_t guidStr[MAX_PATH] = {};
+        CHECK(::StringFromGUID2(GUID_NULL, (LPOLESTR)&guidStr, static_cast<int>(std::size(guidStr))) > 0);
+
+        return wcslen(guidStr);
     }
-}
 
-void towupper(std::wstring& string)
-{
-    for (wchar_t& ch : string)
+    size_t GetClsIdStringLength()
     {
-        ch = std::towupper(ch);
+        wchar_t* clsIdStr;
+        CHECK_EQ(::StringFromCLSID(CLSID_NULL, &clsIdStr), S_OK);
+
+        size_t len = wcslen(clsIdStr);
+
+        ::CoTaskMemFree(clsIdStr);
+
+        return len;
+    }
+
+    // length of {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx} string
+    size_t GetTSFProfileStringLength()
+    {
+        static size_t len = GetGuidStringLength() + GetClsIdStringLength();
+        return len;
     }
 }
 
@@ -117,7 +147,7 @@ std::wstring GetKeyboardLayoutDisplayName(_In_ LPCWSTR pwszKLID)
     static SHLoadIndirectStringFunc SHLoadIndirectString = reinterpret_cast<SHLoadIndirectStringFunc>(::GetProcAddress(::LoadLibraryA("shlwapi.dll"), "SHLoadIndirectString"));
 
     HKEY key;
-    CHECK_EQ(::RegOpenKeyW(HKEY_LOCAL_MACHINE, KeyboardLayoutsRegistryPath, &key), ERROR_SUCCESS);
+    CHECK_EQ(::RegOpenKeyExW(HKEY_LOCAL_MACHINE, KeyboardLayoutsRegistryPath, 0, KEY_READ, &key), ERROR_SUCCESS);
 
     WCHAR layoutDisplayName[MAX_PATH] = {};
     DWORD layoutDispalyNameSize = static_cast<DWORD>(std::size(layoutDisplayName));
@@ -144,10 +174,10 @@ std::wstring GetKeyboardLayoutDisplayName(_In_ LPCWSTR pwszKLID)
     return layoutDisplayName;
 }
 
-std::wstring GetKeyboardLayoutPath(_In_ LPCWSTR pwszKLID)
+std::wstring GetKeyboardLayoutDllPath(_In_ LPCWSTR pwszKLID)
 {
     HKEY key;
-    CHECK_EQ(::RegOpenKeyW(HKEY_LOCAL_MACHINE, KeyboardLayoutsRegistryPath, &key), ERROR_SUCCESS);
+    CHECK_EQ(::RegOpenKeyExW(HKEY_LOCAL_MACHINE, KeyboardLayoutsRegistryPath, 0, KEY_READ, &key), ERROR_SUCCESS);
 
     WCHAR layoutFileName[MAX_PATH] = {};
     DWORD layoutFileNameSize = static_cast<DWORD>(std::size(layoutFileName));
@@ -174,10 +204,10 @@ std::wstring GetKeyboardLayoutLink(_In_ LPCWSTR pwszKLID)
         return cache[pwszKLID];
     }
 
-    std::wstring path = GetKeyboardLayoutPath(pwszKLID);
-    path = ::PathFindFileNameW(&path[0]);
-    ::PathRemoveExtensionW(&path[0]);
-    towlower(path);
+    std::wstring path = GetKeyboardLayoutDllPath(pwszKLID);
+    path = ::PathFindFileNameW(path.data());
+    ::PathRemoveExtensionW(const_cast<LPWSTR>(path.data()));
+    utils::towlower(path);
 
     struct Exceptions
     {
@@ -319,7 +349,7 @@ std::vector<std::wstring> EnumInstalledKeyboardLayouts()
     std::vector<std::wstring> layouts;
 
     HKEY key;
-    CHECK_EQ(::RegOpenKeyW(HKEY_LOCAL_MACHINE, KeyboardLayoutsRegistryPath, &key), ERROR_SUCCESS);
+    CHECK_EQ(::RegOpenKeyExW(HKEY_LOCAL_MACHINE, KeyboardLayoutsRegistryPath, 0, KEY_READ, &key), ERROR_SUCCESS);
 
     DWORD index = 0;
     WCHAR layoutName[MAX_PATH] = {};
@@ -431,7 +461,7 @@ std::map<LANGID, std::vector<std::pair<CLSID, GUID>>> EnumInstalledTSFProfiles()
             while (::RegEnumKeyExW(profileKey, langIdIndex, langIdStr, &langIdStrSize, nullptr, nullptr, nullptr, nullptr) == ERROR_SUCCESS)
             {
                 HKEY langIdKey;
-                CHECK_EQ(::RegOpenKeyW(profileKey, langIdStr, &langIdKey), ERROR_SUCCESS);
+                CHECK_EQ(::RegOpenKeyExW(profileKey, langIdStr, 0, KEY_READ, &langIdKey), ERROR_SUCCESS);
 
                 DWORD profileGuidIndex = 0;
                 WCHAR profileGuidStr[MAX_PATH] = {};
@@ -513,21 +543,21 @@ std::vector<std::wstring> EnumInstalledLocales()
     std::vector<std::wstring> locales;
 
     LOCALE_ENUMPROCEX localeEnumProc = [](LPWSTR localeName, DWORD flags, LPARAM lParam)->BOOL
-    {
-        if (wcslen(localeName) == 0)
-            return TRUE;
+        {
+            if (wcslen(localeName) == 0)
+                return TRUE;
 
-        if ((flags & LOCALE_REPLACEMENT) == LOCALE_REPLACEMENT)
-            return TRUE;
+            if ((flags & LOCALE_REPLACEMENT) == LOCALE_REPLACEMENT)
+                return TRUE;
 
-        if ((flags & LOCALE_ALTERNATE_SORTS) == LOCALE_ALTERNATE_SORTS)
-            return TRUE;
+            if ((flags & LOCALE_ALTERNATE_SORTS) == LOCALE_ALTERNATE_SORTS)
+                return TRUE;
 
-        auto locales{ reinterpret_cast<std::vector<std::wstring>*>(lParam) };
-        CHECK(locales != nullptr);
-        locales->emplace_back(localeName);
-        return TRUE;
-    };
+            auto locales{ reinterpret_cast<std::vector<std::wstring>*>(lParam) };
+            CHECK(locales != nullptr);
+            locales->emplace_back(localeName);
+            return TRUE;
+        };
 
     CHECK(::EnumSystemLocalesEx(localeEnumProc, LOCALE_WINDOWS, reinterpret_cast<LPARAM>(&locales), nullptr) != 0);
 
@@ -560,31 +590,40 @@ std::wstring GetKeyboardsToInstall(const std::wstring& localeName)
 // am-ET: Amharic Input Method 2 (045C:{7C472071-36A7-4709-88CC-859513E583A9}{9A4E8FC7-76BF-4A63-980D-FADDADF7E987})
 std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const std::wstring& inputProfileLanguage)
 {
+    std::wstring inputProfileNormalized = inputProfile;
+
+    // normalize input profile to upper case
+    utils::towupper(inputProfileNormalized);
+
     static std::map<std::wstring, std::wstring> cache;
-    if (cache.find(inputProfile) != cache.end())
+    if (cache.find(inputProfileNormalized) != cache.end())
     {
-        return cache[inputProfile];
+        return cache[inputProfileNormalized];
     }
 
-    auto inputProfileTokens = split(inputProfile, L":", true);
+    auto inputProfileTokens = utils::split(inputProfileNormalized, L":", true);
     CHECK_EQ(inputProfileTokens.size(), 2);
 
     wchar_t* langIdStrTmp = nullptr;
     LANGID langId = static_cast<LANGID>(std::wcstoul(inputProfileTokens[0].c_str(), &langIdStrTmp, 16));
     CHECK(inputProfileTokens[0].c_str() != langIdStrTmp);
 
+    // some languages doesn't have langId - use inputProfileLanguage as a fallback
     std::wstring language = (langId == LOCALE_CUSTOM_DEFAULT) ? inputProfileLanguage : GetLocaleName(langId);
+
     std::wstring profileDisplayName;
     if (inputProfileTokens[1].front() == L'{' && inputProfileTokens[1].back() == L'}') // TSF IME
     {
-        constexpr size_t guidLen = 38;
-        CHECK(inputProfileTokens[1].size() == guidLen * 2);
+        std::wstring tsfInputProfile = inputProfileTokens[1];
+
+        CHECK_EQ(tsfInputProfile.size(), utils::GetTSFProfileStringLength());
+        const size_t guidLen = utils::GetGuidStringLength();
 
         CLSID clsId;
-        CHECK_EQ(::CLSIDFromString(inputProfileTokens[1].substr(0, guidLen).c_str(), &clsId), NOERROR);
+        CHECK_EQ(::CLSIDFromString(tsfInputProfile.substr(0, guidLen).c_str(), &clsId), NOERROR);
 
         GUID guid;
-        CHECK_EQ(::IIDFromString(inputProfileTokens[1].substr(guidLen).c_str(), &guid), S_OK);
+        CHECK_EQ(::IIDFromString(tsfInputProfile.substr(guidLen).c_str(), &guid), S_OK);
 
         std::wstring tsfProfileDisplayName = GetTSFProfileDisplayName(langId, clsId, guid);
         std::wstring tsfProfileLink = GetTSFProfileLink(langId, clsId, guid);
@@ -603,10 +642,11 @@ std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const 
     }
     else // KLID
     {
-        CHECK(inputProfileTokens[1].size() == (KL_NAMELENGTH - 1));
+        std::wstring klid = inputProfileTokens[1];
+        CHECK_EQ(klid.size(), KL_NAMELENGTH - 1);
 
-        std::wstring layoutDisplayName = GetKeyboardLayoutDisplayName(inputProfileTokens[1].c_str());
-        std::wstring layoutFileLink = GetKeyboardLayoutLink(inputProfileTokens[1].c_str());
+        std::wstring layoutDisplayName = GetKeyboardLayoutDisplayName(klid.c_str());
+        std::wstring layoutFileLink = GetKeyboardLayoutLink(klid.c_str());
 
         wchar_t string[MAX_PATH] = {};
         if (!layoutFileLink.empty())
@@ -621,15 +661,10 @@ std::wstring GetInputProfileDisplayName(const std::wstring& inputProfile, const 
         profileDisplayName = string;
     }
 
-    std::wstring inputProfileNormalized = inputProfile;
-
-    // normalize input profile to upper case
-    towupper(inputProfileNormalized);
-
     wchar_t string[1024] = {};
     swprintf_s(string, std::size(string), L"%s: %s (%s)", language.c_str(), profileDisplayName.c_str(), inputProfileNormalized.c_str());
 
-    cache[inputProfile] = string;
+    cache[inputProfileNormalized] = string;
 
     return string;
 }
@@ -668,7 +703,7 @@ int main()
                 layoutDisplayName = L"[" + layoutDisplayName + L"](" + layoutFileLink + L")";
             }
             std::wstring layoutNormalized = layout;
-            towupper(layoutNormalized);
+            utils::towupper(layoutNormalized);
             std::wcout << L"| " << layoutDisplayName << L" | " << layoutNormalized << L" |\n";
         }
     }
@@ -725,14 +760,14 @@ int main()
             if (parentLocale.empty())
             {
                 // Skip input profiles that are same as in English language
-                // 856 -> 776 locales on my system.
+                // 856 -> 800 locales on my system.
                 if (locale != L"en" && keyboardsToInstall == GetKeyboardsToInstall(L"en"))
                     continue;
             }
             else
             {
                 // Skip information for locales that have same keyboard layout profile as in corresponding parent locale.
-                // 856 -> 426 locales on my system.
+                // 885 -> 349 locales on my system.
                 if (keyboardsToInstall == GetKeyboardsToInstall(parentLocale))
                     continue;
             }
@@ -740,7 +775,7 @@ int main()
             std::wstring localeDisplayName = GetLocaleDisplayName(locale);
             std::wcout << L"| " /* << locale << L": "*/ << localeDisplayName << L" | ";
 
-            auto inputProfiles = split(keyboardsToInstall, L";", true);
+            auto inputProfiles = utils::split(keyboardsToInstall, L";", true);
             for (size_t i = 0; i < inputProfiles.size(); ++i)
             {
                 std::wstring profileDisplayName = GetInputProfileDisplayName(inputProfiles[i], locale);
